@@ -16,11 +16,21 @@
  *   last detail")
  *
  * Both a light and a dark palette are defined explicitly below, and
- * `color-scheme: light dark` declares that fact to the browser. Left
- * undeclared, a browser's automatic dark mode "fixes" an unprepared light
- * page by inverting or dimming its colors per-element, which is precisely
- * what erased the contrast between beads, rods, and background — two
- * honest palettes are the fix, not an accident of someone else's heuristic.
+ * `color-scheme: light dark` (plus the equivalent <meta name="color-scheme">
+ * in index.html — some Android browsers only honor the early HTML-level
+ * signal) declares that fact to the browser. Left undeclared, a browser's
+ * automatic dark mode "fixes" an unprepared light page by inverting or
+ * dimming its colors per-element, which is precisely what erased the
+ * contrast between beads, rods, and background — two honest palettes are
+ * the fix, not an accident of someone else's heuristic.
+ *
+ * The dark --bead-idle is deliberately lighter, relative to its background,
+ * than the light palette's equivalent grey: an idle bead only needs to
+ * read as "present but not selected" on a calibrated monitor, but a phone
+ * screen adds variables the design can't control for — auto-brightness,
+ * a warm-tint night filter, direct sunlight — so the dark idle bead carries
+ * extra contrast margin (~4:1 against the background, versus ~3:1 close to
+ * the theoretical minimum) to survive those on real hardware.
  */
 
 :root {
@@ -40,7 +50,7 @@
     --bg: #1c1a16;
     --ink: #f3f0ea;
     --ink-muted: rgba(243, 240, 234, 0.46);
-    --bead-idle: #57503f;
+    --bead-idle: #847c68;
     --accent: #ff6b3d;
   }
 }

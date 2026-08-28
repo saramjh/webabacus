@@ -115,6 +115,12 @@ function attachHeavenInteraction(
   let dragStartY = 0;
   let dragStartState = false;
   let changedDuringDrag = false;
+  // The frame is rendered at native size and scaled down via CSS transform
+  // to fit the viewport (see fitFrameToViewport). event.clientY arrives in
+  // real, post-scale screen pixels, but BEAD_UNIT and DRAG_THRESHOLD are
+  // native-size constants — captured once per gesture (not re-measured on
+  // every pointermove) and divided out so the two stay in the same units.
+  let dragScale = 1;
 
   const setHeaven = (desired: boolean) => {
     if (abacus.getRods()[rodIndex].heaven !== desired) {
@@ -126,13 +132,14 @@ function attachHeavenInteraction(
     if (!lock.acquire(event.pointerId)) return;
     section.setPointerCapture(event.pointerId);
     event.preventDefault();
+    dragScale = section.offsetWidth > 0 ? section.getBoundingClientRect().width / section.offsetWidth : 1;
     dragStartY = event.clientY;
     dragStartState = abacus.getRods()[rodIndex].heaven;
     changedDuringDrag = false;
   });
   section.addEventListener("pointermove", (event) => {
     if (!lock.owns(event.pointerId)) return;
-    const delta = event.clientY - dragStartY; // positive = moving down, toward the bar
+    const delta = (event.clientY - dragStartY) / dragScale; // positive = moving down, toward the bar
     if (!dragStartState && delta > DRAG_THRESHOLD) {
       setHeaven(true);
       changedDuringDrag = true;
@@ -178,14 +185,24 @@ function attachEarthInteraction(
   let dragStartY = 0;
   let grabbedPosition = 0;
   const DRAG_THRESHOLD = BEAD_UNIT / 2;
+  // Same native-vs-screen-pixel mismatch as attachHeavenInteraction: the
+  // frame can be scaled down to fit the viewport, so every screen-space
+  // measurement (the initial tap position, and every drag delta) has to be
+  // divided by the gesture's scale before it's compared against the
+  // native-unit geometry in earthBeadOffset/nearestEarthPositionFromY.
+  // Left unscaled, the error grows with distance from the bar — exactly
+  // why only the bead or two nearest the beam kept registering correctly
+  // once enough rods shrank the frame below its native size.
+  let dragScale = 1;
 
   section.addEventListener("pointerdown", (event) => {
     if (!lock.acquire(event.pointerId)) return;
     section.setPointerCapture(event.pointerId);
     event.preventDefault();
-    dragStartY = event.clientY;
     const rect = section.getBoundingClientRect();
-    const relativeY = event.clientY - rect.top;
+    dragScale = section.offsetWidth > 0 ? rect.width / section.offsetWidth : 1;
+    dragStartY = event.clientY;
+    const relativeY = (event.clientY - rect.top) / dragScale;
     const startCount = abacus.getRods()[rodIndex].earth;
     grabbedPosition = nearestEarthPositionFromY(relativeY, startCount);
     // Immediate tap feedback — identical to a plain click: toggle exactly
@@ -198,7 +215,7 @@ function attachEarthInteraction(
   });
   section.addEventListener("pointermove", (event) => {
     if (!lock.owns(event.pointerId)) return;
-    const delta = event.clientY - dragStartY; // positive = moving away from the bar
+    const delta = (event.clientY - dragStartY) / dragScale; // positive = moving away from the bar
     const current = abacus.getRods()[rodIndex].earth;
     const raiseTarget = grabbedPosition + 1; // grabbed bead + everything toward the bar
     const lowerTarget = grabbedPosition; // grabbed bead + everything away from the bar
