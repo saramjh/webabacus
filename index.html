@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f2efe9" />
+  <meta name="description"
+    content="WebAbacus — a configurable, touch-and-mouse-friendly soroban abacus you can play with in the browser." />
+  <meta property="og:title" content="WebAbacus" />
+  <meta property="og:description"
+    content="A configurable, touch-and-mouse-friendly soroban abacus you can play with in the browser." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>WebAbacus</title>
+</head>
+
+<body>
+  <div id="app">
+    <div id="abacus-mount"></div>
+    <div class="controls">
+      <span class="icon-rods" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="4" y1="2" x2="4" y2="18" stroke="currentColor" stroke-width="2" />
+          <line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" stroke-width="2" />
+          <line x1="16" y1="2" x2="16" y2="18" stroke="currentColor" stroke-width="2" />
+          <rect x="1" y="8" width="6" height="4" rx="2" fill="currentColor" />
+        </svg>
+      </span>
+      <label for="rod-count" class="sr-only">Number of rods</label>
+      <button id="rod-count-decrement" type="button" aria-label="Decrease rod count">−</button>
+      <input id="rod-count" type="number" min="1" max="21" value="7" />
+      <button id="rod-count-increment" type="button" aria-label="Increase rod count">+</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
