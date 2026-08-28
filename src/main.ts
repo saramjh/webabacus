@@ -10,8 +10,9 @@ const mount = document.querySelector<HTMLDivElement>("#abacus-mount");
 const rodCountInput = document.querySelector<HTMLInputElement>("#rod-count");
 const decrementButton = document.querySelector<HTMLButtonElement>("#rod-count-decrement");
 const incrementButton = document.querySelector<HTMLButtonElement>("#rod-count-increment");
+const resetButton = document.querySelector<HTMLButtonElement>("#reset-button");
 
-if (!mount || !rodCountInput || !decrementButton || !incrementButton) {
+if (!mount || !rodCountInput || !decrementButton || !incrementButton || !resetButton) {
   throw new Error("Required DOM elements not found");
 }
 
@@ -60,4 +61,11 @@ decrementButton.addEventListener("click", () => {
 });
 incrementButton.addEventListener("click", () => {
   applyRodCount(clampRodCount(Number(rodCountInput.value)) + 1);
+});
+
+// The button-and-icon stand-in for the swipe-the-bar gesture: same
+// operation, but discoverable without already knowing the real-abacus
+// convention.
+resetButton.addEventListener("click", () => {
+  currentAbacus?.reset();
 });
